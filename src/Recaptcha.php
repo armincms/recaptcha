@@ -26,7 +26,7 @@ class Recaptcha extends ConfigResource
 
             Text::make(__('Secret Key'), '_recaptcha_secret_')
                 ->required(),
-            Text::make(__('Site Key'), '_recaptcha_site)')
+            Text::make(__('Site Key'), '_recaptcha_sitekey_')
                 ->required(),
         ];
     }
