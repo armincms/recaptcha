@@ -3,8 +3,8 @@
 namespace Armincms\Recaptcha;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\{Text, Select}; 
+use Laravel\Nova\Http\Requests\NovaRequest;
 use Armincms\Nova\ConfigResource;
 
 class Recaptcha extends ConfigResource
@@ -29,5 +29,28 @@ class Recaptcha extends ConfigResource
             Text::make(__('Site Key'), '_recaptcha_sitekey_')
                 ->required(),
         ];
+    }
+
+    /**
+     * Return the location to redirect the user after update.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Laravel\Nova\Resource  $resource
+     * @return string
+     */
+    public static function redirectAfterUpdate(NovaRequest $request, $resource)
+    {
+        return tap(parent::redirectAfterUpdate($request, $resource), function() {
+            ob_start();
+            var_export(array_filter([
+                'captcha.secret' => static::option('_recaptcha_secret_'),
+                'captcha.sitekey' => static::option('_recaptcha_sitekey_'), 
+            ]));
+            $options = ob_get_clean();
+
+            file_put_contents(__DIR__.'/config.php', '<?php return '.$options.';');
+            
+            \Artisan::call('config:cache');
+        });
     }
 }

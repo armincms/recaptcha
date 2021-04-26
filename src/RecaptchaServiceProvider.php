@@ -21,8 +21,11 @@ class RecaptchaServiceProvider extends ServiceProvider
         });
 
         $this->app->booted(function($app) { 
-            $app['config']->set('captcha.sitekey', Recaptcha::option('_recaptcha_sitekey_'));
-            $app['config']->set('captcha.secret', Recaptcha::option('_recaptcha_secret_')); 
+            $config = require __DIR__.'/config.php';
+
+            foreach ($config as $key => $value) {
+                $app['config']->set("captcha.{$key}", $value);
+            } 
         });
     } 
 }
