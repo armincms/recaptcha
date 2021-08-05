@@ -24,7 +24,7 @@ class RecaptchaServiceProvider extends ServiceProvider
             $config = require __DIR__.'/config.php';
 
             foreach ($config as $key => $value) {
-                $app['config']->set("captcha.{$key}", $value);
+                $app['config']->set($key, $value);
             } 
         });
     } 
